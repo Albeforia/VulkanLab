@@ -67,7 +67,10 @@ private:
 	void createRenderPass();
 	void createGraphicsPipeline();
 
+	void createBuffer(VkDeviceSize, VkBufferUsageFlags, VkMemoryPropertyFlags,
+					  vklab::VkDeleter<VkBuffer>&, vklab::VkDeleter<VkDeviceMemory>&);
 	void createVertexBuffer();
+	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize);
 
 	void createCommandPool();
 	void createCommandBuffers();
