@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClInclude Include="..\..\source\Library\Shader.h" />
     <ClInclude Include="..\..\source\Library\SwapChain.h" />
+    <ClInclude Include="..\..\source\Library\Vertex.h" />
     <ClInclude Include="..\..\source\Library\VkDebug.h" />
     <ClInclude Include="..\..\source\Library\VkDeleter.h" />
     <ClInclude Include="..\..\source\Library\VkQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\Library\Shader.cpp" />
+    <ClCompile Include="..\..\source\Library\Vertex.cpp" />
     <ClCompile Include="..\..\source\Library\VkDebug.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

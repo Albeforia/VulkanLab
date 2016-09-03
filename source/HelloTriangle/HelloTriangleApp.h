@@ -8,6 +8,7 @@
 
 #include "VkQueue.h"
 #include "SwapChain.h"
+#include "Vertex.h"
 
 #include <vector>
 #include <iostream>
@@ -26,6 +27,12 @@ public:
 
 	const std::vector<const char*> deviceExtensions = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+
+	const std::vector<vklab::Vertex> vertices = {
+		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
 	};
 
 #ifdef NDEBUG
@@ -60,6 +67,8 @@ private:
 	void createRenderPass();
 	void createGraphicsPipeline();
 
+	void createVertexBuffer();
+
 	void createCommandPool();
 	void createCommandBuffers();
 
@@ -73,6 +82,8 @@ private:
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags);
 
 	GLFWwindow* window;
 	uint32_t width;
@@ -98,6 +109,9 @@ private:
 	vklab::VkDeleter<VkRenderPass> renderPass;
 	vklab::VkDeleter<VkPipelineLayout> pipelineLayout;
 	vklab::VkDeleter<VkPipeline> graphicsPipeline;
+
+	vklab::VkDeleter<VkBuffer> vertexBuffer;
+	vklab::VkDeleter<VkDeviceMemory> vertexBufferMemory;
 
 	vklab::VkDeleter<VkCommandPool> commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
