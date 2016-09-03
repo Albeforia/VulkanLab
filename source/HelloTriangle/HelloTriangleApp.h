@@ -50,6 +50,7 @@ private:
 	void createSurface();
 	vklab::SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice);
 	void createSwapChain();
+	void recreateSwapChain();
 
 	void createImageViews();
 	void createFramebuffers();
@@ -107,6 +108,13 @@ private:
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
 		std::cerr << "validation layer: " << msg << std::endl;
 		return VK_FALSE;
+	}
+
+	static void onWindowResized(GLFWwindow* window, int width, int height) {
+		if (width == 0 || height == 0) return;
+
+		auto* app = reinterpret_cast<HelloTriangleApp*>(glfwGetWindowUserPointer(window));
+		app->recreateSwapChain();
 	}
 
 };

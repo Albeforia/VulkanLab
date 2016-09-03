@@ -39,9 +39,11 @@ void HelloTriangleApp::initWindow() {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);		// not OpenGL context
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);			// disable window resizing
 
 	window = glfwCreateWindow(width, height, "Vulkan", nullptr, nullptr);
+
+	glfwSetWindowUserPointer(window, this);
+	glfwSetWindowSizeCallback(window, HelloTriangleApp::onWindowResized);
 }
 
 void HelloTriangleApp::mainLoop() {
@@ -373,11 +375,18 @@ void HelloTriangleApp::createSwapChain() {
 
 	// swap chain may becomes invalid or unoptimized,
 	// for example because the window was resized
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
-
-	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+	VkSwapchainKHR oldSwapChain = swapChain;
+	createInfo.oldSwapchain = oldSwapChain;
+	// the old swap chain needs to stick around until after
+	// the new swap chain has been created,
+	// which means that we can't directly write the new handle to swapChain
+	VkSwapchainKHR newSwapChain;
+	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &newSwapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
+	// destroy the old swap chain and
+	// replace the handle with the handle of the new swap chain
+	*&swapChain = newSwapChain;
 
 	// the implementation is allowed to create more images,
 	// which is why we need to explicitly query the amount again
@@ -699,6 +708,12 @@ void HelloTriangleApp::createCommandPool() {
 }
 
 void HelloTriangleApp::createCommandBuffers() {
+	// if already contains previous command buffers, frees them
+	// happens when recreating swap chain
+	if (commandBuffers.size() > 0) {
+		vkFreeCommandBuffers(device, commandPool, commandBuffers.size(), commandBuffers.data());
+	}
+
 	commandBuffers.resize(swapChainFramebuffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -760,8 +775,16 @@ void HelloTriangleApp::createSemaphores() {
 void HelloTriangleApp::drawFrame() {
 	uint32_t imageIndex;
 	// 'imageAvailableSemaphore' should be signaled when the presentation engine is finished using the image
-	vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(),
-						  imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	auto result = vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(),
+										imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		recreateSwapChain();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -796,5 +819,26 @@ void HelloTriangleApp::drawFrame() {
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(presentQueue, &presentInfo);
+
+	// recreate the swap chain if it is suboptimal to get the best possible result
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+		recreateSwapChain();
+	}
+	else if (result != VK_SUCCESS) {
+		throw std::runtime_error("failed to present swap chain image!");
+	}
+}
+
+void HelloTriangleApp::recreateSwapChain() {
+	vkDeviceWaitIdle(device);
+
+	createSwapChain();
+	createImageViews();
+	createRenderPass();
+	// it is possible to avoid rebuilding pipeline 
+	// by using dynamic state for the viewports and scissor rectangles
+	createGraphicsPipeline();
+	createFramebuffers();
+	createCommandBuffers();
 }
