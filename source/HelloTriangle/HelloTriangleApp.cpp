@@ -26,6 +26,7 @@ HelloTriangleApp::HelloTriangleApp(uint32_t width, uint32_t height)
 	pipelineLayout {device, vkDestroyPipelineLayout},
 	graphicsPipeline {device, vkDestroyPipeline},
 	vertexBuffer {device, vkDestroyBuffer}, vertexBufferMemory {device, vkFreeMemory},
+	indexBuffer {device, vkDestroyBuffer}, indexBufferMemory {device, vkFreeMemory},
 	commandPool {device, vkDestroyCommandPool},
 	imageAvailableSemaphore {device, vkDestroySemaphore},
 	renderFinishedSemaphore {device, vkDestroySemaphore} {}
@@ -72,6 +73,7 @@ void HelloTriangleApp::initVulkan() {
 	createFramebuffers();
 	createCommandPool();
 	createVertexBuffer();
+	createIndexBuffer();
 	createCommandBuffers();
 	createSemaphores();
 }
@@ -761,7 +763,9 @@ void HelloTriangleApp::createCommandBuffers() {
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-		vkCmdDraw(commandBuffers[i], vertices.size(), 1, 0, 0);
+		vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+		vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(commandBuffers[i]);
 
@@ -915,6 +919,29 @@ void HelloTriangleApp::createVertexBuffer() {
 				 vertexBuffer, vertexBufferMemory);
 
 	copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+}
+
+void HelloTriangleApp::createIndexBuffer() {
+	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+	vklab::VkDeleter<VkBuffer> stagingBuffer {device, vkDestroyBuffer};
+	vklab::VkDeleter<VkDeviceMemory> stagingBufferMemory {device, vkFreeMemory};
+	createBuffer(bufferSize,
+				 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+				 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				 stagingBuffer, stagingBufferMemory);
+
+	void* data;
+	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+	memcpy(data, indices.data(), (size_t)bufferSize);
+	vkUnmapMemory(device, stagingBufferMemory);
+
+	createBuffer(bufferSize,
+				 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+				 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+				 indexBuffer, indexBufferMemory);
+
+	copyBuffer(stagingBuffer, indexBuffer, bufferSize);
 }
 
 void HelloTriangleApp::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {

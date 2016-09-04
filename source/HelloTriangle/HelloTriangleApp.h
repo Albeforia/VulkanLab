@@ -30,10 +30,13 @@ public:
 	};
 
 	const std::vector<vklab::Vertex> vertices = {
-		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
+
+	const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
@@ -70,6 +73,7 @@ private:
 	void createBuffer(VkDeviceSize, VkBufferUsageFlags, VkMemoryPropertyFlags,
 					  vklab::VkDeleter<VkBuffer>&, vklab::VkDeleter<VkDeviceMemory>&);
 	void createVertexBuffer();
+	void createIndexBuffer();
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize);
 
 	void createCommandPool();
@@ -115,6 +119,8 @@ private:
 
 	vklab::VkDeleter<VkBuffer> vertexBuffer;
 	vklab::VkDeleter<VkDeviceMemory> vertexBufferMemory;
+	vklab::VkDeleter<VkBuffer> indexBuffer;
+	vklab::VkDeleter<VkDeviceMemory> indexBufferMemory;
 
 	vklab::VkDeleter<VkCommandPool> commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
