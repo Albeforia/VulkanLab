@@ -30,10 +30,10 @@ public:
 	};
 
 	const std::vector<vklab::Vertex> vertices = {
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 	};
 
 	const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
@@ -65,6 +65,8 @@ private:
 	void createImageViews();
 	void createFramebuffers();
 
+	void createImageView(VkImage, VkFormat, vklab::VkDeleter<VkImageView>&);
+
 	void createShaderModule(const std::vector<char>& code,
 							vklab::VkDeleter<VkShaderModule>&);
 	void createRenderPass();
@@ -87,6 +89,15 @@ private:
 	void createSemaphores();
 	void drawFrame();
 	void updateUniformBuffer();
+
+	void createTextureImage();
+	void createImage(uint32_t width, uint32_t height, VkFormat,
+					 VkImageTiling, VkImageUsageFlags, VkMemoryPropertyFlags,
+					 vklab::VkDeleter<VkImage>&, vklab::VkDeleter<VkDeviceMemory>&);
+	void copyImage(VkImage srcImage, VkImage dstImage, uint32_t width, uint32_t height);
+	void transitionImageLayout(VkImage, VkImageLayout oldLayout, VkImageLayout newLayout);
+	void createTextureImageView();
+	void createTextureSampler();
 
 	std::vector<const char*> getRequiredInstanceExts();
 	void checkInstanceExts(std::vector<const char*> extensions);
@@ -133,11 +144,19 @@ private:
 	vklab::VkDeleter<VkBuffer> uniformBuffer;
 	vklab::VkDeleter<VkDeviceMemory> uniformBufferMemory;
 
+	vklab::VkDeleter<VkImage> textureImage;
+	vklab::VkDeleter<VkDeviceMemory> textureImageMemory;
+	vklab::VkDeleter<VkImageView> textureImageView;
+	vklab::VkDeleter<VkSampler> textureSampler;
+
 	vklab::VkDeleter<VkDescriptorPool> descriptorPool;
 	VkDescriptorSet descriptorSet;
 
 	vklab::VkDeleter<VkCommandPool> commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
+
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer);
 
 	vklab::VkDeleter<VkSemaphore> imageAvailableSemaphore;
 	vklab::VkDeleter<VkSemaphore> renderFinishedSemaphore;
