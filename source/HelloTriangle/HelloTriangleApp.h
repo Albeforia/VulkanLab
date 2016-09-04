@@ -30,13 +30,21 @@ public:
 	};
 
 	const std::vector<vklab::Vertex> vertices = {
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+		{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 	};
 
-	const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+	const std::vector<uint16_t> indices = {
+		0, 1, 2, 2, 3, 0,
+		4, 5, 6, 6, 7, 4
+	};
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
@@ -65,7 +73,7 @@ private:
 	void createImageViews();
 	void createFramebuffers();
 
-	void createImageView(VkImage, VkFormat, vklab::VkDeleter<VkImageView>&);
+	void createImageView(VkImage, VkFormat, VkImageAspectFlags, vklab::VkDeleter<VkImageView>&);
 
 	void createShaderModule(const std::vector<char>& code,
 							vklab::VkDeleter<VkShaderModule>&);
@@ -99,6 +107,8 @@ private:
 	void createTextureImageView();
 	void createTextureSampler();
 
+	void createDepthResources();
+
 	std::vector<const char*> getRequiredInstanceExts();
 	void checkInstanceExts(std::vector<const char*> extensions);
 	bool checkDeviceExts(VkPhysicalDevice);
@@ -108,6 +118,12 @@ private:
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags);
+	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling, VkFormatFeatureFlags);
+
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer);
+
+	//
 
 	GLFWwindow* window;
 	uint32_t width;
@@ -115,18 +131,18 @@ private:
 
 	vklab::VkDeleter<VkInstance> instance;
 	vklab::VkDeleter<VkDebugReportCallbackEXT> callback;
+	vklab::VkDeleter<VkSurfaceKHR> surface;
 
 	VkPhysicalDevice physicalDevice;
 	vklab::VkDeleter<VkDevice> device;
-	VkQueue graphicsQueue;
 
-	vklab::VkDeleter<VkSurfaceKHR> surface;
+	VkQueue graphicsQueue;
 	VkQueue presentQueue;
+
 	vklab::VkDeleter<VkSwapchainKHR> swapChain;
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
-
 	std::vector<vklab::VkDeleter<VkImageView>> swapChainImageViews;
 	std::vector<vklab::VkDeleter<VkFramebuffer>> swapChainFramebuffers;
 
@@ -134,6 +150,12 @@ private:
 	vklab::VkDeleter<VkDescriptorSetLayout> descriptorSetLayout;
 	vklab::VkDeleter<VkPipelineLayout> pipelineLayout;
 	vklab::VkDeleter<VkPipeline> graphicsPipeline;
+
+	vklab::VkDeleter<VkCommandPool> commandPool;
+
+	vklab::VkDeleter<VkImage> depthImage;
+	vklab::VkDeleter<VkDeviceMemory> depthImageMemory;
+	vklab::VkDeleter<VkImageView> depthImageView;
 
 	vklab::VkDeleter<VkBuffer> vertexBuffer;
 	vklab::VkDeleter<VkDeviceMemory> vertexBufferMemory;
@@ -152,11 +174,7 @@ private:
 	vklab::VkDeleter<VkDescriptorPool> descriptorPool;
 	VkDescriptorSet descriptorSet;
 
-	vklab::VkDeleter<VkCommandPool> commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
-
-	VkCommandBuffer beginSingleTimeCommands();
-	void endSingleTimeCommands(VkCommandBuffer);
 
 	vklab::VkDeleter<VkSemaphore> imageAvailableSemaphore;
 	vklab::VkDeleter<VkSemaphore> renderFinishedSemaphore;
