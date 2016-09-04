@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\source\Library\Shader.h" />
     <ClInclude Include="..\..\source\Library\SwapChain.h" />
+    <ClInclude Include="..\..\source\Library\Uniform.h" />
     <ClInclude Include="..\..\source\Library\Vertex.h" />
     <ClInclude Include="..\..\source\Library\VkDebug.h" />
     <ClInclude Include="..\..\source\Library\VkDeleter.h" />

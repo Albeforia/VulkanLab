@@ -68,12 +68,17 @@ private:
 	void createShaderModule(const std::vector<char>& code,
 							vklab::VkDeleter<VkShaderModule>&);
 	void createRenderPass();
+	void createDescriptorSetLayout();
 	void createGraphicsPipeline();
+
+	void createDescriptorPool();
+	void createDescriptorSet();
 
 	void createBuffer(VkDeviceSize, VkBufferUsageFlags, VkMemoryPropertyFlags,
 					  vklab::VkDeleter<VkBuffer>&, vklab::VkDeleter<VkDeviceMemory>&);
 	void createVertexBuffer();
 	void createIndexBuffer();
+	void createUniformBuffer();
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize);
 
 	void createCommandPool();
@@ -81,6 +86,7 @@ private:
 
 	void createSemaphores();
 	void drawFrame();
+	void updateUniformBuffer();
 
 	std::vector<const char*> getRequiredInstanceExts();
 	void checkInstanceExts(std::vector<const char*> extensions);
@@ -114,6 +120,7 @@ private:
 	std::vector<vklab::VkDeleter<VkFramebuffer>> swapChainFramebuffers;
 
 	vklab::VkDeleter<VkRenderPass> renderPass;
+	vklab::VkDeleter<VkDescriptorSetLayout> descriptorSetLayout;
 	vklab::VkDeleter<VkPipelineLayout> pipelineLayout;
 	vklab::VkDeleter<VkPipeline> graphicsPipeline;
 
@@ -121,6 +128,13 @@ private:
 	vklab::VkDeleter<VkDeviceMemory> vertexBufferMemory;
 	vklab::VkDeleter<VkBuffer> indexBuffer;
 	vklab::VkDeleter<VkDeviceMemory> indexBufferMemory;
+	vklab::VkDeleter<VkBuffer> uniformStagingBuffer;
+	vklab::VkDeleter<VkDeviceMemory> uniformStagingBufferMemory;
+	vklab::VkDeleter<VkBuffer> uniformBuffer;
+	vklab::VkDeleter<VkDeviceMemory> uniformBufferMemory;
+
+	vklab::VkDeleter<VkDescriptorPool> descriptorPool;
+	VkDescriptorSet descriptorSet;
 
 	vklab::VkDeleter<VkCommandPool> commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
