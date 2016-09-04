@@ -29,23 +29,6 @@ public:
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 
-	const std::vector<vklab::Vertex> vertices = {
-		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-		{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-		{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-	};
-
-	const std::vector<uint16_t> indices = {
-		0, 1, 2, 2, 3, 0,
-		4, 5, 6, 6, 7, 4
-	};
-
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
 #else
@@ -109,6 +92,8 @@ private:
 
 	void createDepthResources();
 
+	void loadModel();
+
 	std::vector<const char*> getRequiredInstanceExts();
 	void checkInstanceExts(std::vector<const char*> extensions);
 	bool checkDeviceExts(VkPhysicalDevice);
@@ -156,6 +141,9 @@ private:
 	vklab::VkDeleter<VkImage> depthImage;
 	vklab::VkDeleter<VkDeviceMemory> depthImageMemory;
 	vklab::VkDeleter<VkImageView> depthImageView;
+
+	std::vector<vklab::Vertex> vertices;
+	std::vector<uint32_t> indices;
 
 	vklab::VkDeleter<VkBuffer> vertexBuffer;
 	vklab::VkDeleter<VkDeviceMemory> vertexBufferMemory;

@@ -95,7 +95,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\Library;$(SolutionDir)..\..\VulkanSDK\1.0.24.0\Include;$(SolutionDir)..\external\stb;$(SolutionDir)..\external\glm-0.9.7.6;$(SolutionDir)..\external\glfw-3.2.1.bin.WIN32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\Library;$(SolutionDir)..\..\VulkanSDK\1.0.24.0\Include;$(SolutionDir)..\external\tinyobjloader;$(SolutionDir)..\external\stb;$(SolutionDir)..\external\glm-0.9.7.6;$(SolutionDir)..\external\glfw-3.2.1.bin.WIN32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\Library;$(SolutionDir)..\..\VulkanSDK\1.0.24.0\Include;$(SolutionDir)..\external\stb;$(SolutionDir)..\external\glm-0.9.7.6;$(SolutionDir)..\external\glfw-3.2.1.bin.WIN32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\Library;$(SolutionDir)..\..\VulkanSDK\1.0.24.0\Include;$(SolutionDir)..\external\tinyobjloader;$(SolutionDir)..\external\stb;$(SolutionDir)..\external\glm-0.9.7.6;$(SolutionDir)..\external\glfw-3.2.1.bin.WIN32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
